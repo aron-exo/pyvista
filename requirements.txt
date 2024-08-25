@@ -5,3 +5,4 @@ pyvistaqt
 rasterio
 numpy
 vtk
+stpyvista
