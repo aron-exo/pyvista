@@ -1,30 +1,20 @@
 import streamlit as st
 import pyvista as pv
+import numpy as np
 from stpyvista import stpyvista
 
-## Initialize a plotter object
-plotter = pv.Plotter(window_size=[400, 400])
+"# 🧱 Structured grid"
 
-## Create a mesh
-mesh = pv.Sphere(radius=1.0, center=(0, 0, 0))
+## Create coordinate data
+x = np.arange(-10, 10, 0.25)
+y = np.arange(-10, 10, 0.25)
+x, y = np.meshgrid(x, y)
+z = np.sin(np.sqrt(x**2 + y**2))
 
-## Associate a scalar field to the mesh
-x, y, z = mesh.cell_centers().points.T
-mesh["My scalar"] = z
+## Set up plotter
+plotter = pv.Plotter(window_size=[600,600])
+surface = pv.StructuredGrid(x, y, z)
+plotter.add_mesh(surface, color='teal', show_edges=True)
 
-## Add mesh to the plotter
-plotter.add_mesh(
-    mesh,
-    scalars="My scalar",
-    cmap="prism",
-    show_edges=True,
-    edge_color="#001100",
-    ambient=0.2,
-)
-
-## Some final touches
-plotter.background_color = "white"
-plotter.view_isometric()
-
-## Pass a plotter to stpyvista
-stpyvista(plotter)
+## Pass the plotter (not the mesh) to stpyvista
+stpyvista(plotter, key="surface")
