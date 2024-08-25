@@ -1,25 +1,30 @@
-import pyvista as pv
 import streamlit as st
+import pyvista as pv
 from stpyvista import stpyvista
 
-st.title("A cube")
-st.info("""Code adapted from https://docs.pyvista.org/user-guide/jupyter/pythreejs.html#scalars-support""")
-
 ## Initialize a plotter object
-plotter = pv.Plotter(window_size=[400,400])
+plotter = pv.Plotter(window_size=[400, 400])
 
-## Create a mesh with a cube 
-mesh = pv.Cube(center=(0,0,0))
+## Create a mesh
+mesh = pv.Sphere(radius=1.0, center=(0, 0, 0))
 
-## Add some scalar field associated to the mesh
-mesh['myscalar'] = mesh.points[:, 2] * mesh.points[:, 0]
+## Associate a scalar field to the mesh
+x, y, z = mesh.cell_centers().points.T
+mesh["My scalar"] = z
 
 ## Add mesh to the plotter
-plotter.add_mesh(mesh, scalars='myscalar', cmap='bwr')
+plotter.add_mesh(
+    mesh,
+    scalars="My scalar",
+    cmap="prism",
+    show_edges=True,
+    edge_color="#001100",
+    ambient=0.2,
+)
 
-## Final touches
+## Some final touches
+plotter.background_color = "white"
 plotter.view_isometric()
-plotter.background_color = 'white'
 
-## Send to streamlit
-stpyvista(plotter, key="pv_cube")
+## Pass a plotter to stpyvista
+stpyvista(plotter)
