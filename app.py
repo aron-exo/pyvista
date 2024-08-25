@@ -49,10 +49,14 @@ def visualize_dem(dem_file):
     # Create a PyVista mesh
     mesh = pv.StructuredGrid(x, y, elevation)
 
-    # Visualize the mesh
-    plotter = BackgroundPlotter()
+    # Visualize the mesh using PyVista Plotter
+    plotter = pv.Plotter(off_screen=True)
     plotter.add_mesh(mesh, cmap='terrain')
-    plotter.show()
+    
+    # Show the plot in the Streamlit app
+    plotter.show(screenshot='dem_plot.png')
+    st.image('dem_plot.png')
+
 
 # Streamlit UI
 st.title("DEM Visualization")
