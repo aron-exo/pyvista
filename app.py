@@ -1,8 +1,7 @@
 import streamlit as st
 import requests
-import os
 import pyvista as pv
-from pyvistaqt import BackgroundPlotter
+from stpyvista import stpyvista
 import numpy as np
 import rasterio
 
@@ -45,21 +44,28 @@ def visualize_dem(dem_file):
 
     # Transform coordinates
     x, y = np.array(transform * (x, y))
-    
+
     # Create a PyVista mesh
     mesh = pv.StructuredGrid(x, y, elevation)
 
-    # Visualize the mesh using PyVista Plotter
-    plotter = pv.Plotter(off_screen=True)
-    plotter.add_mesh(mesh, cmap='terrain')
-    
-    # Show the plot in the Streamlit app
-    plotter.show(screenshot='dem_plot.png')
-    st.image('dem_plot.png')
+    # Add a scalar field (elevation) associated with the mesh
+    mesh['elevation'] = elevation.flatten()
 
+    # Initialize a plotter object
+    plotter = pv.Plotter(window_size=[800, 800])
+
+    # Add mesh to the plotter
+    plotter.add_mesh(mesh, scalars='elevation', cmap='terrain')
+
+    # Final touches
+    plotter.view_isometric()
+    plotter.background_color = 'white'
+
+    # Send to Streamlit using stpyvista
+    stpyvista(plotter, key="pv_dem")
 
 # Streamlit UI
-st.title("DEM Visualization")
+st.title("DEM Visualization with PyVista and Streamlit")
 
 # Define area of interest
 north = st.number_input("North Latitude", value=39.44362)
